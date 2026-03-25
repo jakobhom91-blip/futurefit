@@ -602,7 +602,9 @@ var NEXT_ROLES = {
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
   document.getElementById(id).classList.add('active');
-  window.scrollTo(0, 0);
+  window.scrollTo({ top: 0, behavior: 'instant' });
+  document.documentElement.scrollTop = 0;
+  document.body.scrollTop = 0;
 }
 
 // ── Chips ──
@@ -701,7 +703,7 @@ function getFallback(scores) {
     exposure_narrative: 'Dele af din rolle er under forandring — og det er helt naturligt at det kan føles usikkert. Det vigtige er, at du allerede er i gang med at forstå det. Du har styrker der bliver mere værdifulde, ikke mindre — og der er konkrete veje frem herfra.',
     at_risk_tasks: S.tasks.filter(function(t) { return TASK_RISK[t] && TASK_RISK[t].risk; }).slice(0, 3).map(function(t) { return TASK_RISK[t].note; }),
     human_strengths: ['Din evne til at læse og navigere menneskelige dynamikker', 'Den tillid du opbygger over tid — som AI ikke kan erstatte', 'Din dømmekraft i komplekse og tvetydige situationer'],
-    transition_move: 'Fra udfører og koordinator mod rådgiver og strategisk partner',
+    transition_move: 'Du er godt på vej. Den næste naturlige bevægelse er fra det udførende og koordinerende mod det rådgivende — der hvor din erfaring og menneskelige vurdering skaber mest værdi',
     plan_90: [
       'Kortlæg dine 10 mest gentagne opgaver — og automatisér 2-3 med AI-værktøjer',
       'Overtag én mere strategisk samtale i dit nuværende job',
@@ -780,12 +782,8 @@ function runAnalysis() {
 
   dbg('API kaldt, venter...');
   apiPromise.then(function(result) {
-    dbg('API svarede: ' + (result ? 'OK' : 'NULL'));
-    if (result) {
-      showResult(scores, result);
-    } else {
-      showResult(scores, buildFallback(scores));
-    }
+    dbg('API svarede: ' + (result ? 'OK' : 'NULL - bruger lokal analyse'));
+    showResult(scores, result || buildFallback(scores));
   }).catch(function(err) {
     dbg('CATCH: ' + (err && err.message ? err.message : String(err)));
     showResult(scores, buildFallback(scores));
@@ -924,6 +922,12 @@ function showResult(scores, ai) {
     var b1 = document.getElementById('bar-exp');
     if (b1) { b1.style.transition = 'width 1.2s cubic-bezier(.4,0,.2,1)'; b1.style.width = expPct + '%'; }
     initCoach(scores, ai);
+    // Pulse the result eyebrow to signal completion
+    var eyebrow = document.querySelector('.result-eyebrow');
+    if (eyebrow) {
+      eyebrow.textContent = '✓ Din analyse er klar';
+      eyebrow.style.transition = 'opacity 0.5s';
+    }
   }, 300);
   } catch(renderErr) {
     console.error('showResult crashed:', renderErr);
