@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FutureFit — Se hvordan AI ændrer din rolle</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --paper: #f4efe6;
+  --paper-dark: #ebe4d8;
+  --paper-darker: #dfd7c8;
+  --ink: #1c1916;
+  --ink-soft: #4a4540;
+  --ink-muted: #8a8078;
+  --red: #c8392b;
+  --red-bg: #f5e8e6;
+  --green: #2d6a4f;
+  --green-bg: #e8f4ee;
+  --amber: #b5600d;
+  --amber-bg: #faecd8;
+  --border: #cec5b4;
+  --white: #faf8f4;
+  --serif: 'DM Serif Display', Georgia, serif;
+  --sans: 'DM Sans', system-ui, sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--paper); color: var(--ink); font-family: var(--sans); min-height: 100vh; font-size: 16px; line-height: 1.65; }
+
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  background: var(--paper); border-bottom: 1px solid var(--border);
+  padding: 14px 40px; display: flex; align-items: center; justify-content: space-between;
+}
+.logo { font-family: var(--serif); font-size: 1.25rem; letter-spacing: -0.02em; color: var(--ink); display: flex; align-items: center; gap: 10px; }
+.logo-mark { width: 28px; height: 28px; background: var(--ink); border-radius: 4px; display: flex; align-items: center; justify-content: center; }
+.logo-mark svg { width: 16px; height: 16px; }
+.growlab-badge { font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-muted); padding: 3px 10px; border: 1px solid var(--border); border-radius: 20px; }
+
+.screen { display: none; }
+.screen.active { display: block; animation: fadeIn 0.35s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+/* LANDING */
+#s-landing { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 100px 24px 80px; text-align: center; }
+.eyebrow { font-size: 0.7rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--red); font-weight: 500; margin-bottom: 20px; }
+.headline { font-family: var(--serif); font-size: clamp(2.6rem, 6vw, 4.2rem); line-height: 1.08; letter-spacing: -0.03em; max-width: 700px; margin-bottom: 20px; }
+.headline em { font-style: italic; color: var(--red); }
+.subline { font-size: 1.05rem; color: var(--ink-soft); max-width: 480px; margin-bottom: 12px; font-weight: 300; }
+.tagline-small { font-size: 0.8rem; color: var(--ink-muted); margin-bottom: 48px; font-style: italic; }
+.landing-stats { display: flex; gap: 48px; margin-top: 64px; padding-top: 48px; border-top: 1px solid var(--border); }
+.stat { text-align: center; }
+.stat-num { font-family: var(--serif); font-size: 2rem; line-height: 1; margin-bottom: 4px; }
+.stat-label { font-size: 0.76rem; color: var(--ink-muted); letter-spacing: 0.06em; text-transform: uppercase; }
+
+/* BUTTONS */
+.btn-primary { background: var(--ink); color: var(--white); border: none; padding: 16px 44px; font-family: var(--sans); font-size: 0.9rem; font-weight: 500; letter-spacing: 0.05em; cursor: pointer; border-radius: 2px; transition: background 0.2s, transform 0.15s; }
+.btn-primary:hover { background: #2d2926; transform: translateY(-1px); }
+.btn-back { background: none; border: none; font-family: var(--sans); font-size: 0.85rem; color: var(--ink-muted); cursor: pointer; display: flex; align-items: center; gap: 6px; padding: 8px 0; transition: color 0.2s; }
+.btn-back:hover { color: var(--ink); }
+.btn-back svg { width: 14px; height: 14px; }
+
+/* FORM */
+.form-wrap { max-width: 660px; margin: 0 auto; padding: 100px 24px 80px; }
+.step-indicator { display: flex; align-items: center; gap: 8px; margin-bottom: 40px; }
+.step-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); transition: all 0.3s; }
+.step-dot.done { background: var(--ink); }
+.step-dot.active { background: var(--red); width: 24px; border-radius: 4px; }
+.step-label { font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-muted); margin-left: 8px; }
+.section-title { font-family: var(--serif); font-size: 1.9rem; line-height: 1.15; letter-spacing: -0.02em; margin-bottom: 8px; }
+.section-sub { font-size: 0.92rem; color: var(--ink-soft); margin-bottom: 40px; font-weight: 300; }
+.field { margin-bottom: 28px; }
+label { display: block; font-size: 0.8rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 8px; }
+input[type=text], select {
+  width: 100%; background: var(--white); border: 1px solid var(--border); border-radius: 2px;
+  padding: 13px 16px; font-family: var(--sans); font-size: 0.95rem; color: var(--ink);
+  outline: none; transition: border-color 0.2s; appearance: none;
+}
+input:focus, select:focus { border-color: var(--ink); }
+select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238a8078' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 14px center; padding-right: 40px; cursor: pointer;
+}
+.chips-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.chip { padding: 8px 16px; border: 1px solid var(--border); border-radius: 20px; font-size: 0.85rem; color: var(--ink-soft); cursor: pointer; transition: all 0.15s; background: var(--white); user-select: none; }
+.chip:hover { border-color: var(--ink-soft); color: var(--ink); }
+.chip.selected { background: var(--ink); color: var(--white); border-color: var(--ink); }
+.chip-hint { font-size: 0.75rem; color: var(--ink-muted); margin-top: 8px; }
+
+/* SLIDERS */
+.slider-row { margin-bottom: 28px; }
+.slider-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+.slider-q { font-size: 0.9rem; color: var(--ink); max-width: 85%; }
+.slider-val { font-family: var(--serif); font-size: 1.1rem; color: var(--red); min-width: 20px; text-align: right; }
+.slider-labels { display: flex; justify-content: space-between; margin-top: 4px; }
+.slider-labels span { font-size: 0.68rem; color: var(--ink-muted); }
+input[type=range] { width: 100%; height: 4px; background: var(--border); border-radius: 2px; outline: none; appearance: none; cursor: pointer; border: none; padding: 0; }
+input[type=range]::-webkit-slider-thumb { appearance: none; width: 18px; height: 18px; background: var(--ink); border-radius: 50%; cursor: pointer; transition: transform 0.15s; }
+input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+
+.form-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--border); }
+.error-msg { background: var(--red-bg); color: var(--red); padding: 12px 16px; border-radius: 2px; font-size: 0.85rem; margin-top: 16px; display: none; }
+
+/* LOADING */
+#s-loading { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 24px; }
+.loading-title { font-family: var(--serif); font-size: 2rem; margin-bottom: 12px; letter-spacing: -0.02em; }
+.loading-sub { font-size: 0.9rem; color: var(--ink-muted); margin-bottom: 48px; }
+.loading-bar-wrap { width: 280px; height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; margin-bottom: 24px; }
+.loading-bar { height: 100%; background: var(--red); width: 0%; border-radius: 2px; }
+.loading-step-text { font-size: 0.78rem; color: var(--ink-muted); letter-spacing: 0.06em; }
+
+/* RESULT */
+#s-result { padding: 90px 24px 80px; max-width: 720px; margin: 0 auto; }
+.result-eyebrow { font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--red); margin-bottom: 12px; font-weight: 500; }
+.result-name { font-family: var(--serif); font-size: clamp(1.8rem, 4vw, 2.8rem); line-height: 1.1; letter-spacing: -0.025em; margin-bottom: 12px; }
+.result-tagline { font-size: 1rem; color: var(--ink-soft); font-weight: 300; margin-bottom: 48px; }
+
+.score-card { background: var(--white); border: 1px solid var(--border); border-radius: 4px; padding: 28px; margin-bottom: 20px; position: relative; overflow: hidden; }
+.score-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+.score-card.high::before { background: var(--red); }
+.score-card.medium::before { background: var(--amber); }
+.score-card.low::before { background: var(--green); }
+.score-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
+.score-label { font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-muted); margin-bottom: 4px; }
+.score-title { font-family: var(--serif); font-size: 1.4rem; letter-spacing: -0.02em; }
+.score-badge { font-size: 0.78rem; font-weight: 500; padding: 5px 12px; border-radius: 20px; white-space: nowrap; }
+.badge-high { background: var(--red-bg); color: var(--red); }
+.badge-medium { background: var(--amber-bg); color: var(--amber); }
+.badge-low { background: var(--green-bg); color: var(--green); }
+.score-bar-track { background: var(--paper-dark); height: 5px; border-radius: 3px; overflow: hidden; margin-bottom: 14px; }
+.score-bar-fill { height: 100%; border-radius: 3px; transition: width 1.2s cubic-bezier(.4,0,.2,1); }
+.fill-high { background: var(--red); }
+.fill-medium { background: var(--amber); }
+.fill-low { background: var(--green); }
+.score-text { font-size: 0.88rem; color: var(--ink-soft); line-height: 1.65; }
+
+.result-section { margin-bottom: 40px; }
+.result-section-title { font-family: var(--serif); font-size: 1.25rem; letter-spacing: -0.02em; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+.tag-list { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+.tag { padding: 6px 14px; border-radius: 20px; font-size: 0.82rem; }
+.tag-risk { background: var(--red-bg); color: var(--red); }
+.tag-strength { background: var(--green-bg); color: var(--green); }
+.tag-role { background: var(--paper-dark); color: var(--ink-soft); border: 1px solid var(--border); }
+.prose { font-size: 0.92rem; color: var(--ink-soft); line-height: 1.7; margin-bottom: 14px; }
+.plan-list { list-style: none; }
+.plan-list li { display: flex; gap: 14px; align-items: flex-start; padding: 13px 0; border-bottom: 1px solid var(--paper-dark); font-size: 0.9rem; color: var(--ink-soft); }
+.plan-list li:last-child { border-bottom: none; }
+.plan-num { font-family: var(--serif); font-size: 1.1rem; color: var(--red); min-width: 20px; line-height: 1.4; }
+.quote-block { border-left: 3px solid var(--red); padding: 14px 20px; margin: 24px 0; background: var(--white); }
+.quote-block p { font-family: var(--serif); font-size: 1.05rem; font-style: italic; line-height: 1.5; }
+.divider { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+.result-footer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 48px; }
+.growlab-credit { font-size: 0.75rem; color: var(--ink-muted); }
+.growlab-credit strong { color: var(--ink-soft); font-weight: 500; }
+.btn-restart { background: none; border: 1px solid var(--border); padding: 10px 24px; font-family: var(--sans); font-size: 0.82rem; color: var(--ink-soft); cursor: pointer; border-radius: 2px; transition: all 0.2s; }
+.btn-restart:hover { border-color: var(--ink); color: var(--ink); }
+
+/* COACH */
+.coach-section { border-top: 2px solid var(--ink); padding-top: 40px; margin-top: 8px; }
+.coach-title { font-family: var(--serif); font-size: 1.5rem; letter-spacing: -0.02em; margin-bottom: 6px; }
+.coach-sub { font-size: 0.88rem; color: var(--ink-muted); font-weight: 300; margin-bottom: 24px; }
+.chat-messages { display: flex; flex-direction: column; gap: 14px; margin-bottom: 20px; max-height: 500px; overflow-y: auto; }
+.msg { display: flex; gap: 12px; align-items: flex-start; }
+.msg-avatar { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; font-weight: 600; flex-shrink: 0; margin-top: 2px; }
+.msg-avatar.coach { background: var(--ink); color: var(--white); }
+.msg-avatar.user { background: var(--paper-darker); color: var(--ink-soft); }
+.msg-bubble { padding: 11px 15px; border-radius: 2px; font-size: 0.88rem; line-height: 1.65; max-width: calc(100% - 44px); }
+.msg-bubble.coach { background: var(--white); border: 1px solid var(--border); color: var(--ink); }
+.msg-bubble.user { background: var(--ink); color: var(--white); }
+.msg-bubble.typing { color: var(--ink-muted); font-style: italic; }
+.coach-starters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+.starter { padding: 7px 14px; border: 1px solid var(--border); border-radius: 20px; font-size: 0.78rem; color: var(--ink-soft); cursor: pointer; background: var(--white); transition: all 0.15s; }
+.starter:hover { border-color: var(--ink); color: var(--ink); }
+.coach-input-row { display: flex; gap: 10px; }
+.coach-input { flex: 1; background: var(--white); border: 1px solid var(--border); border-radius: 2px; padding: 12px 15px; font-family: var(--sans); font-size: 0.88rem; color: var(--ink); outline: none; resize: none; transition: border-color 0.2s; }
+.coach-input:focus { border-color: var(--ink); }
+.btn-send { background: var(--ink); color: var(--white); border: none; padding: 12px 20px; font-family: var(--sans); font-size: 0.82rem; font-weight: 500; cursor: pointer; border-radius: 2px; white-space: nowrap; transition: background 0.2s; }
+.btn-send:hover { background: #2d2926; }
+.btn-send:disabled { background: var(--border); cursor: not-allowed; }
+
+@media (max-width: 600px) {
+  nav { padding: 12px 20px; }
+  .growlab-badge { display: none; }
+  .landing-stats { gap: 28px; }
+  .score-top { flex-direction: column; gap: 10px; }
+}
+
+/* CYNEFIN */
+.cynefin-wrap {
+  position: relative;
+  margin-bottom: 12px;
+}
+.cynefin-arrow {
+  position: absolute;
+  bottom: 8px; left: 8px;
+  width: calc(100% - 16px);
+  height: calc(100% - 16px);
+  pointer-events: none;
+  z-index: 5;
+  overflow: visible;
+}
+.cynefin-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 3px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+/* Layout: top-left=Complicated, top-right=Chaotic, bottom-left=Simple, bottom-right=Complex */
+.cynefin-cell {
+  background: var(--white);
+  padding: 16px 16px 14px;
+  min-height: 170px;
+  cursor: pointer;
+  transition: background 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.cynefin-cell:hover { background: var(--paper-dark); }
+.cynefin-label {
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  font-weight: 600;
+  margin-bottom: 5px;
+  position: relative; z-index: 2;
+}
+.cynefin-question {
+  font-size: 0.78rem;
+  color: var(--ink-muted);
+  line-height: 1.5;
+  margin-bottom: 10px;
+  position: relative; z-index: 2;
+  max-width: 85%;
+}
+.cynefin-watermark {
+  position: absolute;
+  bottom: 10px; right: 10px;
+  font-family: var(--serif);
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  opacity: 0.12;
+  line-height: 1.2;
+  text-align: right;
+  pointer-events: none;
+  z-index: 1;
+  max-width: 80%;
+  color: var(--ink);
+}
+.cynefin-tasks-in-cell {
+  display: flex; flex-wrap: wrap; gap: 5px;
+  position: relative; z-index: 2;
+}
+.cynefin-task-chip {
+  font-size: 0.72rem;
+  padding: 4px 10px;
+  border-radius: 12px;
+  background: var(--ink);
+  color: var(--white);
+  cursor: grab;
+  user-select: none;
+  transition: opacity 0.15s;
+}
+.cynefin-task-chip:hover { opacity: 0.75; }
+.cynefin-task-chip.dragging { opacity: 0.35; }
+.cynefin-axis-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.68rem;
+  color: var(--ink-muted);
+  margin-top: 8px;
+  letter-spacing: 0.04em;
+}
+.tag-auto { background: var(--red-bg); color: var(--red); }
+.tag-ai { background: var(--amber-bg); color: var(--amber); }
+.tag-human-ai { background: var(--green-bg); color: var(--green); }
+.tag-human { background: var(--paper-darker); color: var(--ink-soft); border: 1px solid var(--border); }
+.cynefin-tasks-in-cell {
+  display: flex; flex-wrap: wrap; gap: 5px;
+  margin-top: 8px;
+}
+.cynefin-task-chip {
+  font-size: 0.72rem;
+  padding: 3px 10px;
+  border-radius: 12px;
+  background: var(--ink);
+  color: var(--white);
+  cursor: grab;
+  user-select: none;
+  transition: opacity 0.15s;
+}
+.cynefin-task-chip:hover { opacity: 0.8; }
+.cynefin-task-chip.dragging { opacity: 0.4; }
+.cynefin-center {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 32px; height: 32px;
+  background: var(--ink);
+  border-radius: 50%;
+  z-index: 10;
+  pointer-events: none;
+}
+.cynefin-axes {
+  text-align: center;
+  font-size: 0.72rem;
+  color: var(--ink-muted);
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">
+    <div class="logo-mark">
+      <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M8 2L13 13H3L8 2Z" stroke="#f4efe6" stroke-width="1.5" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    FutureFit
+  </div>
+  <span class="growlab-badge">et GROWlab-produkt</span>
+</nav>
+
+<!-- LANDING -->
+<div id="s-landing" class="screen active">
+  <p class="eyebrow">AI-karriereanalyse</p>
+  <h1 class="headline">Se hvad AI gør<br>for <em>dit job</em></h1>
+  <p class="subline">Kortlæg din rolle. Se hvad der ændrer sig. Find din vej frem.</p>
+  <p class="tagline-small">Se hvordan AI ændrer din rolle. Og bevæg dig med vilje.</p>
+  <button class="btn-primary" onclick="showScreen('s-step1')">Start analysen</button>
+  <div class="landing-stats">
+    <div class="stat"><div class="stat-num">4</div><div class="stat-label">Minutter</div></div>
+    <div class="stat"><div class="stat-num">6</div><div class="stat-label">Sektioner</div></div>
+    <div class="stat"><div class="stat-num">∞</div><div class="stat-label">Næste skridt</div></div>
+  </div>
+</div>
+
+<!-- STEP 1 -->
+<div id="s-step1" class="screen">
+  <div class="form-wrap">
+    <div class="step-indicator">
+      <div class="step-dot active"></div>
+      <div class="step-dot"></div>
+      <div class="step-dot"></div>
+      <span class="step-label">Trin 1 / 3 — Din rolle</span>
+    </div>
+    <h2 class="section-title">Hvem er du professionelt?</h2>
+    <p class="section-sub">Fortæl os om din nuværende rolle — ingen CV, bare kontekst.</p>
+    <div class="field">
+      <label>Jobtitel</label>
+      <input type="text" id="f-title" placeholder="fx Projektleder, Marketing Manager, Recruiter…">
+    </div>
+    <div class="field">
+      <label>Branche</label>
+      <select id="f-industry">
+        <option value="">Vælg branche…</option>
+        <option>Tech & software</option>
+        <option>Marketing & kommunikation</option>
+        <option>Finans & økonomi</option>
+        <option>HR & rekruttering</option>
+        <option>Salg & business development</option>
+        <option>Konsulentbranchen</option>
+        <option>Jura & compliance</option>
+        <option>Offentlig sektor</option>
+        <option>Uddannelse & forskning</option>
+        <option>Sundhed & omsorg</option>
+        <option>Medier & kreative brancher</option>
+        <option>Produktion & supply chain</option>
+        <option>Anden branche</option>
+      </select>
+    </div>
+    <div class="error-msg" id="err1">Udfyld venligst jobtitel og branche.</div>
+    <div class="form-nav">
+      <button class="btn-back" onclick="showScreen('s-landing')">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 2L4 7l5 5"/></svg>
+        Tilbage
+      </button>
+      <button class="btn-primary" onclick="step1Next()">Fortsæt</button>
+    </div>
+  </div>
+</div>
+
+<!-- STEP 2 -->
+<div id="s-step2" class="screen">
+  <div class="form-wrap">
+    <div class="step-indicator">
+      <div class="step-dot done"></div>
+      <div class="step-dot active"></div>
+      <div class="step-dot"></div>
+      <span class="step-label">Trin 2 / 3 — Dine opgaver</span>
+    </div>
+    <h2 class="section-title">Hvad bruger du din tid på?</h2>
+    <p class="section-sub">Vælg de 3–6 opgavetyper der fylder mest i din arbejdsuge.</p>
+    <div class="chips-grid" id="chips">
+      <div class="chip" onclick="toggleChip(this)">Skrive & redigere</div>
+      <div class="chip" onclick="toggleChip(this)">Analysere data</div>
+      <div class="chip" onclick="toggleChip(this)">Koordinere & planlægge</div>
+      <div class="chip" onclick="toggleChip(this)">Rådgive & vejlede</div>
+      <div class="chip" onclick="toggleChip(this)">Lede & motivere</div>
+      <div class="chip" onclick="toggleChip(this)">Sælge & forhandle</div>
+      <div class="chip" onclick="toggleChip(this)">Facilitere møder</div>
+      <div class="chip" onclick="toggleChip(this)">Kundekontakt</div>
+      <div class="chip" onclick="toggleChip(this)">Rekruttere & screene</div>
+      <div class="chip" onclick="toggleChip(this)">Rapportere & præsentere</div>
+      <div class="chip" onclick="toggleChip(this)">Kvalitetssikre</div>
+      <div class="chip" onclick="toggleChip(this)">Bygge & udvikle</div>
+      <div class="chip" onclick="toggleChip(this)">Undervise & onboarde</div>
+      <div class="chip" onclick="toggleChip(this)">Supportere & hjælpe</div>
+      <div class="chip" onclick="toggleChip(this)">Strategi & beslutninger</div>
+      <div class="chip" onclick="toggleChip(this)">Research & opsummering</div>
+    </div>
+    <p class="chip-hint">Vælg 3–6 opgaver</p>
+    <div class="error-msg" id="err2">Vælg mindst 3 opgaver for at fortsætte.</div>
+    <div class="form-nav">
+      <button class="btn-back" onclick="showScreen('s-step1')">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 2L4 7l5 5"/></svg>
+        Tilbage
+      </button>
+      <button class="btn-primary" onclick="step2Next()">Fortsæt</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- CYNEFIN STEP -->
+<div id="s-cynefin" class="screen">
+  <div class="form-wrap">
+    <div class="step-indicator">
+      <div class="step-dot done"></div>
+      <div class="step-dot done"></div>
+      <div class="step-dot active"></div>
+      <div class="step-dot"></div>
+      <span class="step-label">Trin 2.5 / 3 — Opgavernes natur</span>
+    </div>
+    <h2 class="section-title">Hvor lever dine opgaver?</h2>
+    <p class="section-sub">Vi har fordelt dine opgaver. Brug spørgsmålene til at tjekke om det passer — og træk dem rundt hvis ikke.</p>
+
+    <div class="cynefin-wrap">
+      <!-- Diagonal arrow SVG from bottom-left to top-right -->
+      <svg class="cynefin-arrow" viewBox="0 0 100 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arrowhead" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 Z" fill="#c8392b" opacity="0.35"/>
+          </marker>
+          <linearGradient id="arrowGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+            <stop offset="0%" style="stop-color:#c8392b;stop-opacity:0.15"/>
+            <stop offset="100%" style="stop-color:#c8392b;stop-opacity:0.4"/>
+          </linearGradient>
+        </defs>
+        <line x1="8" y1="92" x2="88" y2="12"
+          stroke="url(#arrowGrad)" stroke-width="1.5"
+          stroke-dasharray="4 3"
+          marker-end="url(#arrowhead)"/>
+      </svg>
+
+      <div class="cynefin-grid" id="cynefin-grid">
+        <!-- Top-left: Kompliceret -->
+        <div class="cynefin-cell" id="cell-complicated" ondragover="allowDrop(event)" ondrop="dropTask(event,'complicated')">
+          <div class="cynefin-label">Kompliceret</div>
+          <div class="cynefin-question">Kræver det ekspertviden<br>at løse rigtigt?</div>
+          <div class="cynefin-tasks-in-cell" id="tasks-complicated"></div>
+          <div class="cynefin-watermark">Ekspert<br>+ AI</div>
+        </div>
+        <!-- Top-right: Kaotisk -->
+        <div class="cynefin-cell" id="cell-chaotic" ondragover="allowDrop(event)" ondrop="dropTask(event,'chaotic')">
+          <div class="cynefin-label">Kaotisk</div>
+          <div class="cynefin-question">Skal der handles nu —<br>uden tid til analyse?</div>
+          <div class="cynefin-tasks-in-cell" id="tasks-chaotic"></div>
+          <div class="cynefin-watermark">Rent<br>menneskeligt</div>
+        </div>
+        <!-- Bottom-left: Simpelt -->
+        <div class="cynefin-cell" id="cell-simple" ondragover="allowDrop(event)" ondrop="dropTask(event,'simple')">
+          <div class="cynefin-label">Simpelt</div>
+          <div class="cynefin-question">Gør du det samme<br>på samme måde hver gang?</div>
+          <div class="cynefin-tasks-in-cell" id="tasks-simple"></div>
+          <div class="cynefin-watermark">Automa-<br>tisering</div>
+        </div>
+        <!-- Bottom-right: Komplekst -->
+        <div class="cynefin-cell" id="cell-complex" ondragover="allowDrop(event)" ondrop="dropTask(event,'complex')">
+          <div class="cynefin-label">Komplekst</div>
+          <div class="cynefin-question">Kunne du ikke vide svaret,<br>før du prøvede?</div>
+          <div class="cynefin-tasks-in-cell" id="tasks-complex"></div>
+          <div class="cynefin-watermark">Menneske<br>+ AI</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cynefin-axis-labels">
+      <span>↙ AI overtager</span>
+      <span>Mennesket afgørende →↗</span>
+    </div>
+    <p style="font-size:0.76rem;color:var(--ink-muted);margin-bottom:28px;margin-top:6px;">Træk en opgave til en anden celle hvis placeringen ikke passer.</p>
+
+    <div class="form-nav">
+      <button class="btn-back" onclick="showScreen('s-step2')">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 2L4 7l5 5"/></svg>
+        Tilbage
+      </button>
+      <button class="btn-primary" onclick="cynefinNext()">Fortsæt</button>
+    </div>
+  </div>
+</div>
+
+<!-- STEP 3 -->
+<div id="s-step3" class="screen">
+  <div class="form-wrap">
+    <div class="step-indicator">
+      <div class="step-dot done"></div>
+      <div class="step-dot done"></div>
+      <div class="step-dot done"></div>
+      <div class="step-dot active"></div>
+      <span class="step-label">Trin 3 / 3 — Din kontekst</span>
+    </div>
+    <h2 class="section-title">Karakterisér din rolle</h2>
+    <p class="section-sub">Ingen rigtige eller forkerte svar. Vurder ud fra din hverdag som den er nu.</p>
+    <div id="slider-container"></div>
+    <div class="form-nav">
+      <button class="btn-back" onclick="showScreen('s-step2')">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 2L4 7l5 5"/></svg>
+        Tilbage
+      </button>
+      <button class="btn-primary" onclick="runAnalysis()">Analysér min rolle</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOADING -->
+<div id="s-loading" class="screen">
+  <p class="eyebrow">Analyserer</p>
+  <h2 class="loading-title">Vi kigger på din rolle…</h2>
+  <p class="loading-sub">FutureFit vurderer eksponering, styrker og næste skridt.</p>
+  <div class="loading-bar-wrap"><div class="loading-bar" id="loading-bar"></div></div>
+  <p class="loading-step-text" id="loading-step-text">Kortlægger opgaveprofil…</p>
+  <p id="debug-msg" style="font-size:0.75rem;color:#c8392b;margin-top:16px;max-width:400px;text-align:center;"></p>
+</div>
+
+<!-- RESULT -->
+<div id="s-result" class="screen">
+  <div id="result-content" style="max-width:720px;margin:0 auto;padding:90px 24px 80px;"></div>
+</div>
+
+<script>
+// ── State ──
+var S = { title: '', industry: '', tasks: [], sliders: {} };
+var coachHistory = [];
+var coachMsgCount = 0;
+var coachSystemPrompt = '';
+var msgCounter = 0;
+
+var SLIDER_DEFS = [
+  { id: 'routine',    q: 'Mit arbejde er ofte gentageligt og regelbaseret',                                   lo: 'Meget varieret',  hi: 'Meget gentageligt' },
+  { id: 'infowork',   q: 'Mine kerneopgaver handler primært om at behandle, analysere eller producere information', lo: 'Minimal andel',   hi: 'Det meste' },
+  { id: 'trust',      q: 'Mit arbejde kræver personlig tillid fra andre',                                      lo: 'Ikke afgørende',  hi: 'Helt centralt' },
+  { id: 'ambiguity',  q: 'Jeg håndterer komplekse gråzoner og tvetydighed',                                   lo: 'Sjældent',        hi: 'Dagligt' },
+  { id: 'decisions',  q: 'Jeg træffer beslutninger med væsentlige konsekvenser',                              lo: 'Sjældent',        hi: 'Meget ofte' },
+  { id: 'specialized',q: 'Min viden er specialiseret og svær at erstatte',                                    lo: 'Generalist',      hi: 'Dyb specialist' },
+  { id: 'proximity',  q: 'Jeg arbejder tæt på forretningsbeslutninger og dem der tager dem',                 lo: 'Langt fra',       hi: 'Meget tæt på' }
+];
+
+var TASK_RISK = {
+  'Skrive & redigere':         { risk: true,  note: 'Første udkast og standardtekster' },
+  'Research & opsummering':    { risk: true,  note: 'Dataindsamling og opsummering' },
+  'Rekruttere & screene':      { risk: true,  note: 'CV-screening og outreach' },
+  'Rapportere & præsentere':   { risk: true,  note: 'Standard rapporter og slides' },
+  'Koordinere & planlægge':    { risk: true,  note: 'Logistik og koordinering' },
+  'Analysere data':            { risk: true,  note: 'Rutineanalyse og dashboards' },
+  'Lede & motivere':           { risk: false, note: 'Menneskelig ledelse og motivation' },
+  'Rådgive & vejlede':         { risk: false, note: 'Kontekstuel rådgivning og dømmekraft' },
+  'Sælge & forhandle':         { risk: false, note: 'Tillid og relationel forhandling' },
+  'Facilitere møder':          { risk: false, note: 'Dynamisk facilitering og læsning af rum' },
+  'Kundekontakt':              { risk: false, note: 'Relationer og tillidsopbygning' },
+  'Strategi & beslutninger':   { risk: false, note: 'Helhedsforståelse og prioritering' },
+  'Kvalitetssikre':            { risk: false, note: 'Nuanceret vurdering og kontekst' },
+  'Undervise & onboarde':      { risk: false, note: 'Menneskelig tilpasning og empati' },
+  'Supportere & hjælpe':       { risk: false, note: 'Komplekse menneskelige behov' },
+  'Bygge & udvikle':           { risk: false, note: 'Kreativitet og situeret viden' }
+};
+
+var NEXT_ROLES = {
+  'Marketing & kommunikation': ['Content Strategist', 'Brand Advisor', 'Campaign Orchestrator'],
+  'HR & rekruttering':         ['Talent Advisor', 'People Partner', 'Hiring Process Designer'],
+  'Finans & økonomi':          ['Decision Support Lead', 'Financial Advisor', 'Strategic Analyst'],
+  'Tech & software':           ['AI Product Manager', 'Tech Lead', 'Platform Strategist'],
+  'Konsulentbranchen':         ['Senior Advisor', 'Transformation Partner', 'Domain Specialist'],
+  'Jura & compliance':         ['Legal Strategist', 'Compliance Advisor', 'Risk Counselor'],
+  'Salg & business development': ['Strategic Account Lead', 'Revenue Advisor', 'Partnership Director'],
+  'Offentlig sektor':          ['Policy Advisor', 'Change Lead', 'Digital Transformation Manager'],
+  'Uddannelse & forskning':    ['Learning Designer', 'Research Lead', 'Knowledge Curator'],
+  'Medier & kreative brancher':['Creative Director', 'Audience Strategist', 'Narrative Designer']
+};
+
+// ── Navigation ──
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(function(s) { s.classList.remove('active'); });
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+// ── Chips ──
+function toggleChip(el) {
+  var sel = document.querySelectorAll('.chip.selected');
+  if (!el.classList.contains('selected') && sel.length >= 6) return;
+  el.classList.toggle('selected');
+}
+
+// ── Build sliders ──
+function buildSliders() {
+  var container = document.getElementById('slider-container');
+  container.innerHTML = '';
+  SLIDER_DEFS.forEach(function(s) {
+    S.sliders[s.id] = 3;
+    container.innerHTML += '<div class="slider-row">' +
+      '<div class="slider-top">' +
+      '<span class="slider-q">' + s.q + '</span>' +
+      '<span class="slider-val" id="val-' + s.id + '">3</span>' +
+      '</div>' +
+      '<input type="range" min="1" max="5" value="3" oninput="updateSlider(\'' + s.id + '\', this.value)">' +
+      '<div class="slider-labels"><span>' + s.lo + '</span><span>' + s.hi + '</span></div>' +
+      '</div>';
+  });
+}
+
+function updateSlider(id, val) {
+  S.sliders[id] = parseInt(val);
+  document.getElementById('val-' + id).textContent = val;
+}
+
+// ── Step validation ──
+function step1Next() {
+  var t = document.getElementById('f-title').value.trim();
+  var i = document.getElementById('f-industry').value;
+  if (!t || !i) { document.getElementById('err1').style.display = 'block'; return; }
+  document.getElementById('err1').style.display = 'none';
+  S.title = t; S.industry = i;
+  buildSliders();
+  showScreen('s-step2');
+}
+
+function step2Next() {
+  var chips = document.querySelectorAll('.chip.selected');
+  if (chips.length < 3) { document.getElementById('err2').style.display = 'block'; return; }
+  document.getElementById('err2').style.display = 'none';
+  S.tasks = Array.from(chips).map(function(c) { return c.textContent; });
+  buildCynefin();
+  showScreen('s-cynefin');
+}
+
+
+// Cynefin logic
+var TASK_CYNEFIN_DEFAULT = {'Skrive & redigere':'simple','Research & opsummering':'simple','Rekruttere & screene':'complicated','Rapportere & præsentere':'simple','Koordinere & planlægge':'simple','Analysere data':'complicated','Lede & motivere':'complex','Rådgive & vejlede':'complex','Sælge & forhandle':'complex','Facilitere møder':'complex','Kundekontakt':'complex','Strategi & beslutninger':'complex','Kvalitetssikre':'complicated','Undervise & onboarde':'complex','Supportere & hjælpe':'complicated','Bygge & udvikle':'complicated'};
+var taskCynefinMap = {};
+var draggedTask = null;
+function buildCynefin(){taskCynefinMap={};['simple','complicated','complex','chaotic'].forEach(function(cell){var el=document.getElementById('tasks-'+cell);if(el)el.innerHTML='';});S.tasks.forEach(function(task){var cell=TASK_CYNEFIN_DEFAULT[task]||'complicated';taskCynefinMap[task]=cell;addTaskChip(task,cell);});}
+function addTaskChip(task,cellId){var container=document.getElementById('tasks-'+cellId);if(!container)return;var chip=document.createElement('div');chip.className='cynefin-task-chip';chip.textContent=task;chip.draggable=true;chip.dataset.task=task;chip.addEventListener('dragstart',function(){draggedTask=task;var self=chip;setTimeout(function(){self.classList.add('dragging');},0);});chip.addEventListener('dragend',function(){chip.classList.remove('dragging');draggedTask=null;});container.appendChild(chip);}
+function allowDrop(e){e.preventDefault();}
+function dropTask(e,cellId){e.preventDefault();if(!draggedTask)return;var oldCell=taskCynefinMap[draggedTask];if(oldCell===cellId)return;var oldC=document.getElementById('tasks-'+oldCell);if(oldC){oldC.querySelectorAll('.cynefin-task-chip').forEach(function(ch){if(ch.dataset.task===draggedTask)ch.remove();});}taskCynefinMap[draggedTask]=cellId;addTaskChip(draggedTask,cellId);}
+function cynefinNext(){S.cynefin=taskCynefinMap;buildSliders();showScreen('s-step3');}
+
+// ── Scoring ──
+function computeScores() {
+  var s = S.sliders;
+  var exposure = Math.round(s.routine * 0.25 + s.infowork * 0.30 + (6 - s.specialized) * 0.20 + (6 - s.trust) * 0.25);
+  exposure = Math.min(5, Math.max(1, exposure));
+
+  // Use cynefin if available, else fallback to TASK_RISK
+  var simpleCount = 0;
+  if (S.cynefin) {
+    simpleCount = Object.values(S.cynefin).filter(function(v) { return v === 'simple'; }).length;
+  } else {
+    simpleCount = S.tasks.filter(function(t) { return TASK_RISK[t] && TASK_RISK[t].risk; }).length;
+  }
+  var taskAuto = Math.min(5, Math.round(1 + (simpleCount / S.tasks.length) * 4));
+
+  var humanEdge = Math.round((s.trust * 0.30 + s.decisions * 0.25 + s.ambiguity * 0.25 + s.specialized * 0.20));
+  humanEdge = Math.min(5, Math.max(1, humanEdge));
+
+  var readiness = Math.min(5, Math.round((humanEdge + (6 - exposure) + s.proximity) / 3));
+
+  return { exposure: exposure, taskAuto: taskAuto, humanEdge: humanEdge, readiness: readiness };
+}
+
+function getLevelInfo(score) {
+  if (score >= 4) return { label: 'Høj',     cls: 'high',   badge: 'badge-high',   fill: 'fill-high',   pct: score * 20 };
+  if (score >= 3) return { label: 'Moderat', cls: 'medium', badge: 'badge-medium', fill: 'fill-medium', pct: score * 20 };
+  return              { label: 'Lav',      cls: 'low',    badge: 'badge-low',    fill: 'fill-low',    pct: score * 20 };
+}
+
+function getFallback(scores) {
+  var exp = getLevelInfo(scores.exposure);
+  return {
+    exposure_headline: 'Din rolle er under ' + exp.label.toLowerCase() + ' AI-transformation',
+    exposure_narrative: 'Dele af din rolle er under forandring — og det er helt naturligt at det kan føles usikkert. Det vigtige er, at du allerede er i gang med at forstå det. Du har styrker der bliver mere værdifulde, ikke mindre — og der er konkrete veje frem herfra.',
+    at_risk_tasks: S.tasks.filter(function(t) { return TASK_RISK[t] && TASK_RISK[t].risk; }).slice(0, 3).map(function(t) { return TASK_RISK[t].note; }),
+    human_strengths: ['Din evne til at læse og navigere menneskelige dynamikker', 'Den tillid du opbygger over tid — som AI ikke kan erstatte', 'Din dømmekraft i komplekse og tvetydige situationer'],
+    transition_move: 'Fra udfører og koordinator mod rådgiver og strategisk partner',
+    plan_90: [
+      'Kortlæg dine 10 mest gentagne opgaver — og automatisér 2-3 med AI-værktøjer',
+      'Overtag én mere strategisk samtale i dit nuværende job',
+      'Byg et konkret bevis på din menneskelige edge',
+      'Tal med 3 mennesker i roller du kunne bevæge dig mod',
+      'Dokumentér præcist hvor din vurdering skaber værdi, som AI ikke kan levere alene'
+    ],
+    long_term: 'Det smukkeste ved din situation er, at de ting du er bedst til — menneskelig forståelse, kontekst og dømmekraft — er præcis det der bliver mere værdifuldt i en AI-verden.'
+  };
+}
+
+// ── Loading animation ──
+function animateLoading() {
+  var steps = ['Kortlægger opgaveprofil…', 'Vurderer AI-eksponering…', 'Beregner human edge…', 'Identificerer næste skridt…', 'Sammensætter din analyse…'];
+  var i = 0;
+  var el = document.getElementById('loading-step-text');
+  var bar = document.getElementById('loading-bar');
+  var pcts = [0, 15, 35, 55, 75];
+  var iv = setInterval(function() {
+    if (i < steps.length) {
+      el.textContent = steps[i];
+      bar.style.transition = 'width 0.6s ease';
+      bar.style.width = pcts[i] + '%';
+      i++;
+    } else {
+      clearInterval(iv);
+    }
+  }, 900);
+}
+
+// ── Run analysis ──
+function dbg(msg) { var el = document.getElementById("debug-msg"); if(el) el.textContent = msg; console.log("[FF]", msg); }
+
+function runAnalysis() {
+  try {
+  showScreen('s-loading');
+  animateLoading();
+  dbg('Starter analyse...');
+
+  var scores = computeScores();
+  var riskyTasks = S.tasks.filter(function(t) { return TASK_RISK[t] && TASK_RISK[t].risk; });
+  var safeTasks  = S.tasks.filter(function(t) { return TASK_RISK[t] && !TASK_RISK[t].risk; });
+
+  var prompt = 'Role: ' + S.title + '\n' +
+    'Industry: ' + S.industry + '\n' +
+    'Main tasks: ' + S.tasks.join(', ') + '\n' +
+    'Tasks at higher AI risk: ' + (riskyTasks.join(', ') || 'none') + '\n' +
+    'Tasks with strong human value: ' + (safeTasks.join(', ') || 'none') + '\n' +
+    'Exposure score: ' + scores.exposure + '/5\n' +
+    'Human edge: ' + scores.humanEdge + '/5\n' +
+    'Task automation: ' + scores.taskAuto + '/5\n' +
+    'Transition readiness: ' + scores.readiness + '/5\n' +
+    'Sliders: routine=' + S.sliders.routine + ', infowork=' + S.sliders.infowork + ', trust=' + S.sliders.trust + ', ambiguity=' + S.sliders.ambiguity + ', decisions=' + S.sliders.decisions + ', specialized=' + S.sliders.specialized + ', proximity=' + S.sliders.proximity + '\n' +
+    'Cynefin mapping: ' + (S.cynefin ? Object.entries(S.cynefin).map(function(e){return e[0]+'=>'+e[1];}).join(', ') : 'not provided');
+
+  var systemPrompt = 'Du er FutureFit \u2014 et varmt og klogt karrierev\u00e6rkt\u00f8j der hj\u00e6lper mennesker med at navigere AI-forandringen med mod og retning.\n\nDin tone er varm, anerkendende og h\u00e5befuld \u2014 som en mentor der tror p\u00e5 personen og tager dem seri\u00f8st. Du ser deres styrker, og du fort\u00e6ller sandheden med omsorg, ikke med dom.\n\nREGLER:\n- Skriv KUN p\u00e5 dansk. Hvert ord.\n- V\u00e6r specifik om DENNE rolle i DENNE branche med DISSE opgaver. Aldrig generisk.\n- Anerkendt at forandring kan f\u00f8les stor \u2014 og vis at der er en konkret vej frem.\n- N\u00e6vn konkrete opgavetyper fra deres profil.\n- Afslut altid med h\u00e5b og handlekraft.\n\nSvar KUN med et gyldigt JSON-objekt. Ingen markdown, ingen tekst f\u00f8r eller efter.\n\nJSON:\n{"exposure_headline":"Varm pr\u00e6cis dansk s\u00e6tning 6-8 ord om deres situation","exposure_narrative":"2-3 s\u00e6tninger. Anerkend situationen. V\u00e6r \u00e6rlig om hvad der \u00e6ndrer sig i DENNE rolle. Afslut med konkret h\u00e5b og en vej frem.","at_risk_tasks":["specifik opgave i denne rolle der \u00e6ndrer sig","opgave","opgave"],"human_strengths":["specifik menneskelig styrke i DENNE rolle som vokser i v\u00e6rdi n\u00e5r AI overtager rutinerne","styrke","styrke"],"transition_move":"\u00c9n varm s\u00e6tning: Fra [konkret nuv\u00e6rende] mod [konkret n\u00e6ste] \u2014 en mulighed, ikke et krav","long_term":"\u00c9n h\u00e5befuld voksen s\u00e6tning om hvor denne persons v\u00e6rdi er p\u00e5 vej hen."}';
+
+  var apiPromise = fetch('/api/analyze', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1000,
+      system: systemPrompt,
+      messages: [{ role: 'user', content: prompt }]
+    })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    var block = data.content && data.content.find(function(b) { return b.type === 'text'; });
+    if (!block) return null;
+    try { return JSON.parse(block.text.replace(/```json|```/g, '').trim()); }
+    catch(e) { return null; }
+  })
+  .catch(function() { return null; });
+
+  dbg('API kaldt, venter...');
+  apiPromise.then(function(result) {
+    dbg('API svarede: ' + (result ? 'OK' : 'NULL'));
+    if (result) {
+      showResult(scores, result);
+    } else {
+      showResult(scores, buildFallback(scores));
+    }
+  }).catch(function(err) {
+    dbg('CATCH: ' + (err && err.message ? err.message : String(err)));
+    showResult(scores, buildFallback(scores));
+  });
+  } catch(topErr) {
+    dbg('TOP CRASH: ' + topErr.message);
+    showError('Der opstod en fejl: ' + topErr.message);
+  }
+}
+
+
+// ── Smart fallback (uses actual profile) ──
+function buildFallback(scores) {
+  var exp = getLevelInfo(scores.exposure);
+  var riskyTasks = S.tasks.filter(function(t) { return S.cynefin ? S.cynefin[t] === 'simple' : (TASK_RISK[t] && TASK_RISK[t].risk); });
+  var safeTasks  = S.tasks.filter(function(t) { return S.cynefin ? (S.cynefin[t] === 'complex' || S.cynefin[t] === 'chaotic') : (TASK_RISK[t] && !TASK_RISK[t].risk); });
+
+  var headlines = {
+    high:   'Din rolle er under markant forandring lige nu',
+    medium: 'Dele af din rolle vil ændre sig de næste par år',
+    low:    'Din rolle står relativt stærkt i en AI-tid'
+  };
+  var narratives = {
+    high:   'Som ' + S.title + ' i ' + S.industry + ' vil særligt dine rutineopgaver og informationsopgaver blive påvirket hurtigt. Det er ikke en dom — det er en invitation til at flytte dig mod det der virkelig kræver dig. Du har allerede de menneskelige styrker der bliver vigtigere fremover.',
+    medium: 'Som ' + S.title + ' i ' + S.industry + ' vil AI gradvist overtage de mere forudsigelige dele af dit arbejde. Det skaber plads til at du kan fokusere mere på det komplekse og relationelle — der hvor din menneskelige vurdering gør den store forskel.',
+    low:    'Din rolle som ' + S.title + ' i ' + S.industry + ' bygger i høj grad på det AI endnu ikke kan — menneskelig dømmekraft, relationer og kompleks kontekstforståelse. Du er godt placeret, og der er klare veje til at gøre dig endnu stærkere.'
+  };
+
+  var level = scores.exposure >= 4 ? 'high' : scores.exposure >= 3 ? 'medium' : 'low';
+
+  return {
+    exposure_headline: headlines[level],
+    exposure_narrative: narratives[level],
+    at_risk_tasks: riskyTasks.slice(0,3).map(function(t) { return TASK_RISK[t] ? TASK_RISK[t].note : t; }),
+    human_strengths: safeTasks.slice(0,3).map(function(t) { return TASK_RISK[t] ? TASK_RISK[t].note : t; }),
+    transition_move: 'Fra udfører og koordinator mod rådgiver og strategisk stemme i ' + S.industry,
+    long_term: 'Det smukkeste ved din situation er, at de ting du er bedst til — menneskelig forståelse, kontekst og dømmekraft — er præcis det der bliver mere værdifuldt i en AI-verden.'
+  };
+}
+
+// ── Show error ──
+function showError(msg) {
+  try {
+    var el = document.getElementById('result-content');
+    if (el) el.innerHTML = '<div style="text-align:center;padding:80px 24px;"><p style="font-size:1.6rem;margin-bottom:16px;font-family:serif;">Ups…</p><p style="color:#4a4540;margin-bottom:32px;">' + (msg||'Noget gik galt.') + '</p><button onclick="restart()" style="background:#1c1916;color:#fff;border:none;padding:14px 36px;cursor:pointer;">Prøv igen</button></div>';
+    showScreen('s-result');
+  } catch(e) { alert('Fejl: ' + (msg || e.message)); }
+}
+
+// ── Show result ──
+function showResult(scores, ai) {
+  var exp   = getLevelInfo(scores.exposure);
+  var riskyTasks = S.tasks.filter(function(t) { return TASK_RISK[t] && TASK_RISK[t].risk; });
+  var safeTasks  = S.tasks.filter(function(t) { return TASK_RISK[t] && !TASK_RISK[t].risk; });
+
+  var atRisk = ai.at_risk_tasks && ai.at_risk_tasks.length
+    ? ai.at_risk_tasks
+    : riskyTasks.map(function(t) { return TASK_RISK[t].note; });
+
+  var strengths = ai.human_strengths && ai.human_strengths.length
+    ? ai.human_strengths
+    : safeTasks.map(function(t) { return TASK_RISK[t].note; });
+
+  var plan = ai.plan_90 || [];
+
+  var html = '<p class="result-eyebrow">Din FutureFit-analyse</p>' +
+    '<h1 class="result-name">' + S.title + '<br>' +
+    '<em style="font-family:var(--serif);font-style:italic;font-size:0.55em;color:var(--ink-muted)">' + S.industry + '</em></h1>' +
+    '<p class="result-tagline">' + (ai.exposure_headline || '') + '</p>' +
+
+    '<div class="score-card ' + exp.cls + '">' +
+      '<div class="score-top">' +
+        '<div><div class="score-label">AI-påvirkning</div><div class="score-title">Sådan påvirker AI din rolle</div></div>' +
+        '<span class="score-badge ' + exp.badge + '">' + exp.label + ' &middot; ' + scores.exposure + '/5</span>' +
+      '</div>' +
+      '<div class="score-bar-track"><div class="score-bar-fill ' + exp.fill + '" id="bar-exp" style="width:0%"></div></div>' +
+      '<p class="score-text">' + (ai.exposure_narrative || '') + '</p>' +
+    '</div>' +
+
+
+
+    '<div class="result-section">' +
+      '<h3 class="result-section-title">Hvad ændrer sig først</h3>' +
+      '<p class="prose">De dele af rollen som ' + S.title + ' der sandsynligvis ændrer sig inden for 2–3 år i ' + S.industry + ':</p>' +
+      '<div class="tag-list">' + atRisk.map(function(t) { return '<span class="tag tag-risk">' + t + '</span>'; }).join('') + '</div>' +
+    '</div>' +
+
+    '<div class="result-section">' +
+      '<h3 class="result-section-title">Hvad der bliver vigtigere i din rolle</h3>' +
+      '<p class="prose">Det der bliver vigtigere i din rolle som ' + S.title + ' — ikke mindre — efterhånden som AI overtager rutinerne:</p>' +
+      '<div class="tag-list">' + strengths.map(function(s) { return '<span class="tag tag-strength">' + s + '</span>'; }).join('') + '</div>' +
+    '</div>' +
+
+    '<div class="result-section">' +
+      '<h3 class="result-section-title">Din mest realistiske bevægelse</h3>' +
+      '<div class="quote-block"><p>' + (ai.transition_move || '') + '</p></div>' +
+    '</div>' +
+
+
+
+    '<div class="result-section">' +
+      '<h3 class="result-section-title">Det større billede</h3>' +
+      '<p class="prose" style="font-size:1rem;color:var(--ink)">' + (ai.long_term || '') + '</p>' +
+    '</div>' +
+
+    '<hr class="divider">' +
+    '<div class="result-footer">' +
+      '<div class="growlab-credit">Et produkt fra <strong>GROWlab</strong><br><span style="font-size:0.7rem">growlab.dk</span></div>' +
+      '<button class="btn-restart" onclick="restart()">Start forfra</button>' +
+    '</div>' +
+
+    '<div class="coach-section">' +
+      '<h3 class="coach-title">Tal med din analyse</h3>' +
+      '<p class="coach-sub">Stil spørgsmål, gå dybere, eller udfordr hvad du lige har læst.</p>' +
+      '<div class="coach-starters" id="coach-starters">' +
+        '<span class="starter" onclick="sendStarter(this)">Ja, giv mig min 90-dages plan</span>' +
+        '<span class="starter" onclick="sendStarter(this)">Er min situation virkelig så alvorlig?</span>' +
+        '<span class="starter" onclick="sendStarter(this)">Hvilke AI-værktøjer bør jeg lære?</span>' +
+        '<span class="starter" onclick="sendStarter(this)">Hvordan taler jeg med min leder om det her?</span>' +
+        '<span class="starter" onclick="sendStarter(this)">Hvad hvis jeg ikke vil skifte retning?</span>' +
+      '</div>' +
+      '<div class="chat-messages" id="chat-messages"></div>' +
+      '<div class="coach-input-row">' +
+        '<textarea class="coach-input" id="coach-input" placeholder="Stil et spørgsmål til din analyse…" rows="1" onkeydown="if(event.key===\'Enter\'&&!event.shiftKey){event.preventDefault();sendCoachMessage()}"></textarea>' +
+        '<button class="btn-send" id="send-btn" onclick="sendCoachMessage()">Send</button>' +
+      '</div>' +
+    '</div>';
+
+  document.getElementById('result-content').innerHTML = html;
+  try {
+  showScreen('s-result');
+
+  setTimeout(function() {
+    var expPct = scores.exposure * 20;
+
+    var b1 = document.getElementById('bar-exp');
+    if (b1) { b1.style.transition = 'width 1.2s cubic-bezier(.4,0,.2,1)'; b1.style.width = expPct + '%'; }
+    initCoach(scores, ai);
+  }, 300);
+  } catch(renderErr) {
+    console.error('showResult crashed:', renderErr);
+    showError('Rapporten kunne ikke vises: ' + renderErr.message);
+  }
+}
+
+// ── Coach ──
+function initCoach(scores, ai) {
+  coachMsgCount = 0;
+  coachHistory = [];
+
+  coachSystemPrompt = 'You are a calm, honest career coach inside FutureFit.\n\n' +
+    'User profile:\n' +
+    '- Role: ' + S.title + '\n' +
+    '- Industry: ' + S.industry + '\n' +
+    '- Tasks: ' + S.tasks.join(', ') + '\n' +
+    '- Exposure: ' + scores.exposure + '/5\n' +
+    '- Human edge: ' + scores.humanEdge + '/5\n' +
+    '- Readiness: ' + scores.readiness + '/5\n\n' +
+    'Their analysis:\n' +
+    '- ' + (ai.exposure_headline || '') + '\n' +
+    '- ' + (ai.exposure_narrative || '') + '\n' +
+    '- At risk: ' + ((ai.at_risk_tasks || []).join(', ')) + '\n' +
+    '- Strengths: ' + ((ai.human_strengths || []).join(', ')) + '\n' +
+    '- Move: ' + (ai.transition_move || '') + '\n\n' +
+    'Vær ærlig, specifik og konkret. Referer altid til deres faktiske rolle og opgaver. Hold svar under 150 ord. Svar på dansk.\n\n' +
+    'Din FØRSTE opgave: Tilbyd en personlig 90-dages plan. Hvis brugeren beder om den, lever en skarp, konkret 90-dages plan specifikt til rollen som ' + S.title + ' i ' + S.industry + ' — ikke generiske råd, men præcise handlinger for DENNE person. Brug hvad du ved om deres opgaver og eksponering.\n\n' +
+    'GROWLAB: After the user has sent 3 or more messages, if they seem genuinely curious, motivated, or are asking about community, experimentation, next steps, or what to actually do — naturally weave in GROWlab. ' +
+    'GROWlab is a Danish community where people experiment with the future of work together — part learning lab, part movement. ' +
+    'Members run experiments, share what they learn, and build things like FutureFit. Next event: 20. maj, Menneske + AI. Website: growlab.dk. ' +
+    'Make it feel like a human recommendation, not an ad. Tailor it to exactly what they have been asking about. Soft and open — never pushy.';
+
+  addChatMessage('coach', 'Tak fordi du tog dig tid til at kigge din situation i øjnene. Det er ikke altid let — og det viser noget om dig. Vil du have din personlige 90-dages plan som ' + S.title + '? Eller er der noget i analysen du vil forstå bedre?');
+}
+
+function sendStarter(el) {
+  document.getElementById('coach-starters').style.display = 'none';
+  document.getElementById('coach-input').value = el.textContent;
+  sendCoachMessage();
+}
+
+function sendCoachMessage() {
+  var input = document.getElementById('coach-input');
+  var msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+
+  coachMsgCount++;
+  addChatMessage('user', msg);
+  coachHistory.push({ role: 'user', content: msg });
+
+  var btn = document.getElementById('send-btn');
+  btn.disabled = true;
+  var typingId = addChatMessage('coach', 'Tænker…', true);
+
+  var countNote = coachMsgCount >= 3
+    ? '\n\n[The user has now sent ' + coachMsgCount + ' messages. If their curiosity warrants it, you may now naturally introduce GROWlab.]'
+    : '\n\n[Message ' + coachMsgCount + ' of 3. Do NOT mention GROWlab yet.]';
+
+  fetch('/api/analyze', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1000,
+      system: coachSystemPrompt + countNote,
+      messages: coachHistory
+    })
+  })
+  .then(function(r) { return r.json(); })
+  .then(function(data) {
+    var block = data.content && data.content.find(function(b) { return b.type === 'text'; });
+    var reply = block ? block.text : 'Beklager — noget gik galt. Prøv igen.';
+    removeChatMessage(typingId);
+    addChatMessage('coach', reply);
+    coachHistory.push({ role: 'assistant', content: reply });
+    btn.disabled = false;
+  })
+  .catch(function() {
+    removeChatMessage(typingId);
+    addChatMessage('coach', 'Der opstod en forbindelsesfejl. Sørg for at åbne FutureFit via Claude.ai eller en server.');
+    btn.disabled = false;
+  });
+}
+
+function addChatMessage(role, text, isTyping) {
+  var id = 'cm-' + (++msgCounter);
+  var wrap = document.getElementById('chat-messages');
+  if (!wrap) return id;
+  var initials = role === 'coach' ? 'FF' : 'Dig';
+  var extra = isTyping ? ' typing' : '';
+  wrap.innerHTML += '<div class="msg" id="' + id + '">' +
+    '<div class="msg-avatar ' + role + '">' + initials + '</div>' +
+    '<div class="msg-bubble ' + role + extra + '">' + text.replace(/\n/g, '<br>') + '</div>' +
+    '</div>';
+  wrap.scrollTop = wrap.scrollHeight;
+  return id;
+}
+
+function removeChatMessage(id) {
+  var el = document.getElementById(id);
+  if (el) el.remove();
+}
+
+// ── Restart ──
+function restart() {
+  document.getElementById('f-title').value = '';
+  document.getElementById('f-industry').value = '';
+  document.querySelectorAll('.chip.selected').forEach(function(c) { c.classList.remove('selected'); });
+  S.tasks = [];
+  showScreen('s-landing');
+}
+</script>
+</body>
+</html>
