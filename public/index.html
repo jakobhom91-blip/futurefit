@@ -102,7 +102,8 @@ input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
 .error-msg { background: var(--red-bg); color: var(--red); padding: 12px 16px; border-radius: 2px; font-size: 0.85rem; margin-top: 16px; display: none; }
 
 /* LOADING */
-#s-loading { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 24px; }
+#s-loading { min-height: 100vh; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 24px; }
+#s-loading.active { display: flex; }
 .loading-title { font-family: var(--serif); font-size: 2rem; margin-bottom: 12px; letter-spacing: -0.02em; }
 .loading-sub { font-size: 0.9rem; color: var(--ink-muted); margin-bottom: 48px; }
 .loading-bar-wrap { width: 280px; height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; margin-bottom: 24px; }
@@ -439,7 +440,7 @@ input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
       <div class="step-dot done"></div>
       <div class="step-dot active"></div>
       <div class="step-dot"></div>
-      <span class="step-label">Trin 2.5 / 3 — Opgavernes natur</span>
+      <span class="step-label">Trin 3 / 4 — Opgavernes natur</span>
     </div>
     <h2 class="section-title">Hvor lever dine opgaver?</h2>
     <p class="section-sub">Vi har fordelt dine opgaver. Brug spørgsmålene til at tjekke om det passer — og træk dem rundt hvis ikke.</p>
@@ -518,7 +519,7 @@ input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
       <div class="step-dot done"></div>
       <div class="step-dot done"></div>
       <div class="step-dot active"></div>
-      <span class="step-label">Trin 3 / 3 — Din kontekst</span>
+      <span class="step-label">Trin 4 / 4 — Din kontekst</span>
     </div>
     <h2 class="section-title">Karakterisér din rolle</h2>
     <p class="section-sub">Ingen rigtige eller forkerte svar. Vurder ud fra din hverdag som den er nu.</p>
@@ -540,7 +541,7 @@ input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
   <p class="loading-sub">FutureFit vurderer eksponering, styrker og næste skridt.</p>
   <div class="loading-bar-wrap"><div class="loading-bar" id="loading-bar"></div></div>
   <p class="loading-step-text" id="loading-step-text">Kortlægger opgaveprofil…</p>
-  <p id="debug-msg" style="font-size:0.75rem;color:#c8392b;margin-top:16px;max-width:400px;text-align:center;"></p>
+  <p id="debug-msg" style="display:none;font-size:0.75rem;color:#c8392b;margin-top:16px;max-width:400px;text-align:center;"></p>
 </div>
 
 <!-- RESULT -->
@@ -595,7 +596,10 @@ var NEXT_ROLES = {
   'Salg & business development': ['Strategic Account Lead', 'Revenue Advisor', 'Partnership Director'],
   'Offentlig sektor':          ['Policy Advisor', 'Change Lead', 'Digital Transformation Manager'],
   'Uddannelse & forskning':    ['Learning Designer', 'Research Lead', 'Knowledge Curator'],
-  'Medier & kreative brancher':['Creative Director', 'Audience Strategist', 'Narrative Designer']
+  'Medier & kreative brancher':['Creative Director', 'Audience Strategist', 'Narrative Designer'],
+  'Sundhed & omsorg':           ['Patient Experience Lead', 'Health Advisor', 'Care Coordinator'],
+  'Produktion & supply chain':  ['Process Optimizer', 'Operations Strategist', 'Quality Lead'],
+  'Anden branche':              ['Domain Specialist', 'Strategic Advisor', 'Change Lead']
 };
 
 // ── Navigation ──
@@ -721,7 +725,7 @@ function animateLoading() {
   var i = 0;
   var el = document.getElementById('loading-step-text');
   var bar = document.getElementById('loading-bar');
-  var pcts = [0, 15, 35, 55, 75];
+  var pcts = [0, 20, 40, 65, 85];
   var iv = setInterval(function() {
     if (i < steps.length) {
       el.textContent = steps[i];
@@ -891,7 +895,7 @@ function showResult(scores, ai) {
 
     '<hr class="divider">' +
     '<div class="result-footer">' +
-      '<div class="growlab-credit">Et produkt fra <strong>GROWlab</strong><br><span style="font-size:0.7rem">growlab.dk</span></div>' +
+      '<div class="growlab-credit">Et produkt fra <strong>GROWlab</strong><br><a href="https://growlab.dk" target="_blank" style="font-size:0.7rem;color:var(--ink-muted);text-decoration:underline;">growlab.dk</a></div>' +
       '<button class="btn-restart" onclick="restart()">Start forfra</button>' +
     '</div>' +
 
@@ -913,6 +917,9 @@ function showResult(scores, ai) {
     '</div>';
 
   document.getElementById('result-content').innerHTML = html;
+  var bar = document.getElementById('loading-bar');
+  if (bar) { bar.style.transition = 'width 0.4s ease'; bar.style.width = '100%'; }
+  setTimeout(function() {
   try {
   showScreen('s-result');
 
@@ -933,6 +940,7 @@ function showResult(scores, ai) {
     console.error('showResult crashed:', renderErr);
     showError('Rapporten kunne ikke vises: ' + renderErr.message);
   }
+  }, 400);
 }
 
 // ── Coach ──
